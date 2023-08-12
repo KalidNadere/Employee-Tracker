@@ -2,13 +2,25 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../sequelize');
 
 const Employee = sequelize.define('Employee', {
-  firstName: {
-    type: DataTypes.STRING,
+  id: {
+    type: DataTypes.INTEGER,
+    primaryKey: true,
+    autoIncrement: true,
+  },
+  first_name: {
+    type: DataTypes.STRING(30),
     allowNull: false,
   },
-  lastName: {
-    type: DataTypes.STRING,
+  last_name: {
+    type: DataTypes.STRING(30),
     allowNull: false,
+  },
+  role_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  manager_id: {
+    type: DataTypes.INTEGER,
   },
 });
 
