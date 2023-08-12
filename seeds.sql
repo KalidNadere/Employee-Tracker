@@ -1,4 +1,4 @@
--- Add sample department data
+-- Department data
 INSERT INTO Department (name)
 VALUES
 ('HR'),
@@ -8,7 +8,7 @@ VALUES
 ('Tech'),
 ('Legal');
 
--- Add sample role data
+-- Role data
 INSERT INTO Role (title, salary, department_id)
 VALUES
 ('Manager', 70000, 1),
@@ -18,7 +18,7 @@ VALUES
 ('Software Engineer', 105000, 5),
 ('Barrister', 110000, 6);
 
--- Add sample employee data
+-- Employee data
 INSERT INTO Employee (first_name, last_name, role_id, manager_id)
 VALUES
 ('John', 'Doe', 1, 1),
