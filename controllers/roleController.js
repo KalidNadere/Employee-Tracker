@@ -59,12 +59,54 @@ const roleController = {
   updateRole: async (req, res) => {
     try {
       const roleId = req.params.id;
-      // Implement the logic to update the role based on roleId
+  
+      // Retrieving role from the database
+      const role = await Role.findByPk(roleId);
+  
+      if (!role) {
+        return res.status(404).json({ error: 'Role not found' });
+      }
+  
+      // Get updated role details from user using prompts
+      const departments = await Department.findAll();
+      const departmentChoices = departments.map((department) => {
+        return {
+          name: department.departmentName,
+          value: department.id,
+        };
+      });
+  
+      const updatedRoleDetails = await inquirer.prompt([
+        {
+          type: 'input',
+          name: 'title',
+          message: "Enter the role's updated title:",
+          default: role.title,
+        },
+        {
+          type: 'number',
+          name: 'salary',
+          message: "Enter the role's updated salary:",
+          default: role.salary,
+        },
+        {
+          type: 'list',
+          name: 'department_id',
+          message: "Select the updated department for the role:",
+          choices: departmentChoices,
+          default: role.department_id,
+        },
+      ]);
+  
+      // Updating retrieved role with new details
+      await role.update(updatedRoleDetails);
+  
       res.json({ message: 'Role updated successfully' });
     } catch (error) {
       res.status(500).json({ error: 'Internal server error' });
     }
   },
+  
 
   deleteRole: async (req, res) => {
     try {
