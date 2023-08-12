@@ -5,6 +5,8 @@ const roleRoutes = require('./routes/roleRoutes');
 const employeeRoutes = require('./routes/employeeRoutes');
 const sequelize = require('./sequelize');
 const inquirer = require('inquirer');
+require('dotenv').config();
+const { seedDatabase } = require('./seed');
 
 // Importing departmentController
 const departmentController = require('./controllers/departmentController');
@@ -23,6 +25,7 @@ app.use(employeeRoutes);
 async function startApp() {
   try {
     await sequelize.sync();
+    await seedDatabase();
 
 const menuChoices = [
       'View All Departments',
@@ -47,40 +50,37 @@ const { menu } = await inquirer.prompt({
     });
 
 switch (menu) {
-  case 'View All Departments':
-      departmentController.viewAllDepartments();
-      break;
-  case 'View All Roles':
-      roleController.viewAllRoles();
-      break;
-  case 'View All Employees':
-      employeeController.viewAllEmployees();
-      break;
-  case 'Add A Department':
-      departmentController.addDepartment();
-      break;
-  case 'Add A Role':
-      roleController.addRole();
-      break;
-  case 'Add An Employee':
-      employeeControlleraddEmployee();
-      break;
-  case 'Update An Employee Role':
-      updateEmployeeRole();
-      break;
-  case 'Update An Employee Manager':
-      updateEmployeeManager();
-      break;
-  case 'Delete Department':
-      deleteDepartment();
-      break;
-  case 'Delete Role':
-      deleteRole();
-      break;
-  case 'Delete Employee':
-      deleteEmployee();
-      break;
-  case 'Exit':
+case 'View All Departments':
+  await departmentController.viewAllDepartments();
+  break;
+case 'View All Roles':
+  await roleController.viewAllRoles();
+  break;
+case 'View All Employees':
+  await employeeController.viewAllEmployees();
+  break;
+case 'Add A Department':
+  await departmentController.addDepartment();
+  break;
+case 'Add A Role':
+  await roleController.addRole();
+  break;
+case 'Add An Employee':
+  await employeeController.addEmployee();
+  break;
+case 'Update An Employee Manager':
+  await updateEmployeeManager();
+  break;
+case 'Delete Department':
+  await deleteDepartment();
+  break;
+case 'Delete Role':
+  await deleteRole();
+  break;
+case 'Delete Employee':
+  await deleteEmployee();
+  break;
+case 'Exit':
       console.log('Goodbye!');
       process.exit();
  }
@@ -89,5 +89,5 @@ switch (menu) {
   }
 }
 
-// Call the async function to start the app
+// Calling async function to start the app
 startApp();
