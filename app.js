@@ -25,7 +25,7 @@ app.use(employeeRoutes);
 async function startApp() {
   try {
     await sequelize.sync();
-    await seedDatabase();
+    await seedDatabase;
 
 const menuChoices = [
       'View All Departments',

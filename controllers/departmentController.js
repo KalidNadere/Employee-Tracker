@@ -1,15 +1,15 @@
 const Department = require('./../models/Department');
 
 const departmentController = {
-  getAllDepartments: async (req, res) => {
-    try {
-      const departments = await Department.findAll();
-      res.json(departments);
-    } catch (error) {
-      console.error('Error fetching all departments:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
+  // getAllDepartments: async (req, res) => {
+  //   try {
+  //     const departments = await Department.findAll();
+  //     res.json(departments);
+  //   } catch (error) {
+  //     console.error('Error fetching all departments:', error);
+  //     res.status(500).json({ error: 'Internal server error' });
+  //   }
+  // },
 
   viewAllDepartments: async () => {
     try {
@@ -19,7 +19,7 @@ const departmentController = {
         return;
       }
 
-      console.log('List of Departments:');
+    console.log('List of Departments:');
     console.table(departments, ['id', 'departmentName']);
   } catch (error) {
     console.error('Error viewing all departments:', error);

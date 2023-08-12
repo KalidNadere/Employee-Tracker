@@ -45,7 +45,7 @@ const employeeData = [
   { first_name: 'Jean', last_name: 'Claude', role_id: 3, manager_id: 1},
 ];
 
-async function seedDatabase() {
+async function createDatabase() {
   try {
     // Sync models with database
     await sequelize.sync();

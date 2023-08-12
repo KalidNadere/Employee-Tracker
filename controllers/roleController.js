@@ -4,12 +4,19 @@ const inquirer = require('inquirer');
 
 const roleController = {
 
-  getAllRoles: async (req, res) => {
+  viewAllRoles: async () => {
     try {
       const roles = await Role.findAll();
-      res.json(roles);
+      if (roles.length === 0) {
+        console.log('No roles found.');
+      } else {
+        console.log('All Roles:');
+        roles.forEach(role => {
+          console.log(`- ${role.title}`);
+        });
+      }
     } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
+      console.error('Error viewing all Roles:', error);
     }
   },
   
