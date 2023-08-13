@@ -34,11 +34,17 @@ module.exports = {
         name: 'salary',
         message: "Enter the role's salary:",
       },
+      {
+        type: 'list',
+        name: 'department',
+        message: "Select the department for the role:",
+        choices: departmentChoices,
+      }
       
     ])
     .then((answers) => {
-      const query = 'INSERT INTO Role (title, salary) VALUES (?, ?)';
-      connection.query(query, [answers.title, answers.salary], (err) => {
+      const query = 'INSERT INTO Role (title, salary, department_id) VALUES (?, ?, ?)';
+      connection.query(query, [answers.title, answers.salary, answers.department], (err) => {
         if (err) {
           console.error('Error adding role:', err);
         } else {

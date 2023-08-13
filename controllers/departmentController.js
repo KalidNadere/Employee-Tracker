@@ -54,7 +54,7 @@ module.exports = {
           choices: departmentChoices,
         })
         .then((answer) => {
-          const deleteQuery = 'DELETE FROM Department WHERE name = ?';
+          const deleteQuery = 'DELETE FROM Department WHERE id = ?';
           connection.query(deleteQuery, [answer.departmentName], (err) => {
             if (err) {
               console.error('Error deleting department:', err);

@@ -88,10 +88,13 @@ async function viewAllDepartments() {
 // function to view all roles
 async function viewAllRoles() {
   try {
-    const query = 'SELECT Role.id, Role.title, Role.salary, Department.name AS department FROM Role ' + 'INNER JOIN Department ON Role.department_id = Department.id';
+    const query = 
+    'SELECT Role.id, Role.title, Role.salary, Department.name AS department FROM Role ' + 
+    'INNER JOIN Department ON Role.department_id = Department.id';
 
     const data = await connection.query(query)
-    console.log(data);
+    
+    console.table(data);
 
     startApp()
   } catch (err) {
@@ -111,13 +114,7 @@ async function viewAllEmployees() {
 
     const [data] = await connection.query(query);
 
-    console.log('All Employees:');
-    data.forEach((employee) => {
-      console.log(
-        `ID: ${employee.id}, Name: ${employee.first_name} ${employee.last_name}, ` +
-        `Role: ${employee.role}, Salary: ${employee.salary}, Department: ${employee.department}`
-      );
-    });
+    console.table(data);
 
     startApp();
   } catch (err) {
@@ -148,7 +145,7 @@ async function addDepartment() {
 async function addRole() {
   try {
     const departments = await connection.query('SELECT * FROM Department');
-    const departmentChoices = departments.map((department) => ({
+    const departmentChoices = departments[0].map((department) => ({
       name: department.name,
       value: department.id,
     }));
@@ -191,7 +188,7 @@ async function addRole() {
 async function addEmployee() {
   try {
     const roles = await connection.query('SELECT * FROM Role');
-    const roleChoices = roles.map((role) => ({
+    const roleChoices = roles[0].map((role) => ({
       name: role.title,
       value: role.id,
     }));
@@ -236,7 +233,7 @@ async function addEmployee() {
 async function updateEmployeeRole() {
   try {
     const employees = await connection.query('SELECT * FROM Employee');
-    const employeeChoices = employees.map((employee) => ({
+    const employeeChoices = employees[0].map((employee) => ({
       name: `${employee.first_name} ${employee.last_name}`,
       value: employee.id,
     }));
@@ -249,7 +246,7 @@ async function updateEmployeeRole() {
     });
 
     const roles = await connection.query('SELECT * FROM Role');
-    const roleChoices = roles.map((role) => ({
+    const roleChoices = roles[0].map((role) => ({
       name: role.title,
       value: role.id,
     }));
@@ -278,7 +275,7 @@ async function updateEmployeeRole() {
   async function deleteDepartment() {
     try {
       const departments = await connection.query('SELECT * FROM Department');
-      const departmentChoices = departments.map((department) => ({
+      const departmentChoices = departments[0].map((department) => ({
         name: department.name,
         value: department.id,
       }));
@@ -299,5 +296,32 @@ async function updateEmployeeRole() {
       console.error('Error deleting department:', err);
     }
   }
+
+  // Function to delete an employee
+async function deleteEmployee() {
+  try {
+    const employees = await connection.query('SELECT * FROM Employee');
+    const employeeChoices = employees[0].map((employee) => ({
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id,
+    }));
+
+    const selectedEmployee = await inquirer.prompt({
+      type: 'list',
+      name: 'employeeId',
+      message: 'Select the employee to delete:',
+      choices: employeeChoices,
+    });
+
+    const deleteQuery = 'DELETE FROM Employee WHERE id = ?';
+    await connection.query(deleteQuery, [selectedEmployee.employeeId]);
+
+    console.log('Employee deleted successfully.');
+    startApp();
+  } catch (err) {
+    console.error('Error deleting employee:', err);
+  }
+}
+
   
   startApp();
