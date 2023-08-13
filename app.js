@@ -76,11 +76,8 @@ async function viewAllDepartments() {
   try {
     const query = 'SELECT * FROM Department';
     const [results, _] = await connection.query(query);
-
-    console.log('All Departments:');
-    results.forEach((department) => {
-      console.log(`- ${department.name}`);
-    });
+    
+    console.table(results)
 
    startApp()
   } catch (err) {
