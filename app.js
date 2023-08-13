@@ -91,7 +91,7 @@ async function viewAllRoles() {
     const query = 
     'SELECT Role.id, Role.title, Department.name AS department, Role.salary FROM Role LEFT JOIN Department ON Role.department_id = Department.id';
 
-    const data = await connection.query(query)
+    const [data] = await connection.query(query)
     
     console.table(data);
 
