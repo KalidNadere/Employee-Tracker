@@ -3,11 +3,6 @@ const connectionPool = require('./util/database'); // importing Mysql connection
 
 // Function to start the app
 function startApp() {
-  // connection.getConnection((err, connection) => {
-  //   if (err) {
-  //     console.error('Error connecting to database:', err);
-  //     return;
-  //   }
 
   inquirer
     .prompt({
@@ -64,6 +59,7 @@ function startApp() {
         case 'Delete Employee':
           deleteEmployee();
           break;
+
         case 'Exit':
           console.log('Goodbye!');
           connection.end();
@@ -73,7 +69,6 @@ function startApp() {
           startApp();
       }
     });
- // }); 
 }
 
 // Function to view all departments
@@ -379,5 +374,5 @@ connectionPool.getConnection((err, connection) => {
 
   console.log('Connected to database as id', connection.threadId);
   
-  startApp(connection);
+  startApp();
 });
