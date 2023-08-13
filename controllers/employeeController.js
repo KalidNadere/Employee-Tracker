@@ -1,130 +1,130 @@
-const { Employee } = require('../models/Employee');
 const inquirer = require('inquirer');
+const { connection } = require('../util/database');
 
-const employeeController = {
-  getAllEmployees: async (req, res) => {
+module.exports = {
+  async viewAllEmployees() {
     try {
-      const employees = await Employee.findAll();
-      res.json(employees);
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
-
-  getEmployeeById: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const employee = await Employee.findByPk(id);
-      
-      if (!employee) {
-        res.status(404).json({ message: 'Employee not found' });
-        return;
-      }
-
-      res.json(employee);
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
-  
-  addEmployee: async (req, res) => {
-    try {
-      const departments = await Department.findAll();
-      const departmentChoices = departments.map((department) => {
-        return {
-          name: department.name,
-          value: department.id,
-        };
+      const query = 'SELECT * FROM Employee';
+      connection.query(query, (err, employees) => {
+        if (err) {
+          console.error('Error fetching employees:', err);
+        } else {
+          console.log('All Employees:');
+          employees.forEach(employee => {
+            console.log(`- ${employee.first_name} ${employee.last_name}`);
+          });
+        }
+        startApp();
       });
-  
-      const employeeDetails = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'firstName',
-          message: "Enter the employee's first name:",
-        },
-        {
-          type: 'input',
-          name: 'lastName',
-          message: "Enter the employee's last name:",
-        },
-        {
-          type: 'list',
-          name: 'departmentId',
-          message: "Select the employee's department:",
-          choices: departmentChoices,
-        },
-      ]);
-  
-      const newEmployee = await Employee.create({
-        firstName: employeeDetails.firstName,
-        lastName: employeeDetails.lastName,
-        departmentId: employeeDetails.departmentId,
+    } catch (error) {
+      console.error('Error viewing all Employees:', error);
+    }
+  },
+
+  addEmployee: () => {
+    // code to add an employee here using inquirer prompts and MySQL queries
+    inquirer.prompt([
+      {
+        type: 'input',
+        name: 'firstName',
+        message: "Enter the employee's first name:",
+      },
+      {
+        type: 'input',
+        name: 'lastName',
+        message: "Enter the employee's last name:",
+      },
+      // Add other prompts for role and manager
+    ])
+    .then((answers) => {
+      const query = 'INSERT INTO Employee (first_name, last_name) VALUES (?, ?)';
+      connection.query(query, [answers.firstName, answers.lastName], (err) => {
+        if (err) {
+          console.error('Error adding employee:', err);
+        } else {
+          console.log(`Employee "${answers.firstName} ${answers.lastName}" added successfully.`);
+        }
+        startApp();
       });
-  
-      res.json(newEmployee);
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    });
   },
-  
-  updateEmployee: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const employee = await Employee.findByPk(id);
-  
-      if (!employee) {
-        res.status(404).json({ message: 'Employee not found' });
-        return;
-      }
-  
-      const updatedDetails = await inquirer.prompt([
-        {
-          type: 'input',
-          name: 'firstName',
-          message: "Enter the employee's updated first name:",
-          default: employee.firstName,
-        },
-        {
-          type: 'input',
-          name: 'lastName',
-          message: "Enter the employee's updated last name:",
-          default: employee.lastName,
-        },
-      ]);
-  
-      await Employee.update(
-        {
-          firstName: updatedDetails.firstName,
-          lastName: updatedDetails.lastName,
-        },
-        { where: { id } }
-      );
-  
-      res.json({ message: 'Employee updated successfully' });
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+
+  getEmployeeById: () => {
+    
+    inquirer.prompt([
+      {
+        type: 'input',
+        name: 'employeeId',
+        message: 'Enter the ID of the employee:',
+      },
+    ])
+    .then((answers) => {
+      const query = 'SELECT * FROM Employee WHERE id = ?';
+      connection.query(query, [answers.employeeId], (err, employee) => {
+        if (err) {
+          console.error('Error fetching employee:', err);
+        } else {
+          console.log('Employee Details:');
+          console.log(`- Name: ${employee[0].first_name} ${employee[0].last_name}`);
+          // Display other details as needed
+        }
+        startApp();
+      });
+    });
   },
-  
-  deleteEmployee: async (req, res) => {
-    try {
-      const { id } = req.params;
-      const employee = await Employee.findByPk(id);
-  
-      if (!employee) {
-        res.status(404).json({ message: 'Employee not found' });
-        return;
-      }
-  
-      await Employee.destroy({ where: { id } });
-  
-      res.json({ message: 'Employee deleted successfully' });
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
+
+  updateEmployee: () => {
+    
+    inquirer.prompt([
+      {
+        type: 'input',
+        name: 'employeeId',
+        message: 'Enter the ID of the employee you want to update:',
+      },
+      {
+        type: 'input',
+        name: 'newFirstName',
+        message: "Enter the employee's new first name:",
+      },
+      {
+        type: 'input',
+        name: 'newLastName',
+        message: "Enter the employee's new last name:",
+      },
+    ])
+    .then((answers) => {
+      const query = 'UPDATE Employee SET first_name = ?, last_name = ? WHERE id = ?';
+      connection.query(query, [answers.newFirstName, answers.newLastName, answers.employeeId], (err) => {
+        if (err) {
+          console.error('Error updating employee:', err);
+        } else {
+          console.log(`Employee updated successfully.`);
+        }
+        startApp();
+      });
+    });
   },
-  
+
+  deleteEmployee: () => {
+    
+    inquirer.prompt([
+      {
+        type: 'input',
+        name: 'employeeId',
+        message: 'Enter the ID of the employee you want to delete:',
+      },
+    ])
+    .then((answers) => {
+      const query = 'DELETE FROM Employee WHERE id = ?';
+      connection.query(query, [answers.employeeId], (err) => {
+        if (err) {
+          console.error('Error deleting employee:', err);
+        } else {
+          console.log(`Employee deleted successfully.`);
+        }
+        startApp();
+      });
+    });
+  },
+ 
 };
-
-module.exports = employeeController;

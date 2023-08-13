@@ -1,24 +1,32 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../sequelize');
+const connection = require('../util/database');
 
-const Role = sequelize.define('Role', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  title: {
-    type: DataTypes.STRING(30),
-    allowNull: false,
-  },
-  salary: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
-  },
-  department_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-});
+class Role {
+  static async viewAllRoles() {
+    const [rows, fields] = await connection.execute('SELECT * FROM Roles');
+    return rows;
+  }
+
+  static async addRole(title, salary, departmentId) {
+    const [result] = await connection.execute(
+      'INSERT INTO Roles (title, salary, departmentId) VALUES (?, ?, ?)',
+      [title, salary, departmentId]
+    );
+    return result.insertId;
+  }
+
+  static async updateRole(roleId, title, salary, departmentId) {
+    const [result] = await connection.execute(
+      'UPDATE Roles SET title = ?, salary = ?, departmentId = ? WHERE id = ?',
+      [title, salary, departmentId, roleId]
+    );
+    return result.affectedRows > 0;
+  }
+
+  static async deleteRole(roleId) {
+    const [result] = await connection.execute('DELETE FROM Roles WHERE id = ?', [roleId]);
+    return result.affectedRows > 0;
+  }
+
+}
 
 module.exports = Role;

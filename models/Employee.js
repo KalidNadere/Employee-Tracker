@@ -1,27 +1,29 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../sequelize');
+const connection = require('../util/database');
 
-const Employee = sequelize.define('Employee', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  first_name: {
-    type: DataTypes.STRING(30),
-    allowNull: false,
-  },
-  last_name: {
-    type: DataTypes.STRING(30),
-    allowNull: false,
-  },
-  role_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  manager_id: {
-    type: DataTypes.INTEGER,
-  },
-});
+class Employee {
+  static async viewAllEmployees() {
+    const [rows, fields] = await connection.execute('SELECT * FROM Employees');
+    return rows;
+  }
+
+  static async addEmployee(firstName, lastName, roleId, managerId) {
+    const [result] = await connection.execute(
+      'INSERT INTO Employees (firstName, lastName, roleId, managerId) VALUES (?, ?, ?, ?)',
+      [firstName, lastName, roleId, managerId]
+    );
+    return result.insertId;
+  }
+
+  static async updateEmployee(employeeId, roleId) {
+    const [result] = await connection.execute('UPDATE Employees SET roleId = ? WHERE id = ?', [roleId, employeeId]);
+    return result.affectedRows > 0;
+  }
+
+  static async deleteEmployee(employeeId) {
+    const [result] = await connection.execute('DELETE FROM Employees WHERE id = ?', [employeeId]);
+    return result.affectedRows > 0;
+  }
+
+}
 
 module.exports = Employee;

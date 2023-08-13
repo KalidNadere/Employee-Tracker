@@ -1,61 +1,70 @@
-const Department = require('./../models/Department');
+const inquirer = require('inquirer');
+const { connection } = require('../util/database');
 
-const departmentController = {
-  // getAllDepartments: async (req, res) => {
-  //   try {
-  //     const departments = await Department.findAll();
-  //     res.json(departments);
-  //   } catch (error) {
-  //     console.error('Error fetching all departments:', error);
-  //     res.status(500).json({ error: 'Internal server error' });
-  //   }
-  // },
-
-  viewAllDepartments: async () => {
+module.exports = {
+  async viewAllDepartments() {
     try {
-      const departments = await Department.findAll();
-      if (departments.length === 0) {
-        console.log('No departments found.');
-        return;
-      }
-
-    console.log('List of Departments:');
-    console.table(departments, ['id', 'departmentName']);
-  } catch (error) {
-    console.error('Error viewing all departments:', error);
-  }
-},
-
-addDepartment: async (req, res) => {
-  try {
-    const { departmentName } = req.body;
-    const newDepartment = await Department.create({ departmentName });
-    console.log(`Department '${departmentName}' added successfully.`);
-    res.json(newDepartment);
-  } catch (error) {
-    console.error('Error adding department:', error);
-    res.status(500).json({ error: 'Failed to add department' });
-  }
-},
-
-
-  deleteDepartment: async (req, res) => {
-    try {
-      const departmentId = req.params.id;
-      
-      const deletedDepartment = await Department.destroy({ where: { id: departmentId } });
-      
-      if (deletedDepartment === 0) {
-        return res.status(404).json({ error: 'Department not found' });
-      }
-
-      res.json({ message: 'Department deleted successfully' });
+      const query = 'SELECT * FROM Department';
+      connection.query(query, (err, departments) => {
+        if (err) {
+          console.error('Error fetching departments:', err);
+        } else {
+          console.log('All Departments:');
+          departments.forEach(department => {
+            console.log(`- ${department.name}`);
+          });
+        }
+        startApp();
+      });
     } catch (error) {
-      console.error('Error deleting department:', error);
-      res.status(500).json({ error: 'Failed to delete department' });
+      console.error('Error viewing all Departments:', error);
     }
   },
 
-};
+  addDepartment: () => {
+    inquirer.prompt({
+      type: 'input',
+      name: 'departmentName',
+      message: "Enter the department's name:",
+    })
+    .then((answer) => {
+      const query = 'INSERT INTO Department (name) VALUES (?)';
+      connection.query(query, [answer.departmentName], (err) => {
+        if (err) {
+          console.error('Error adding department:', err);
+        } else {
+          console.log(`Department "${answer.departmentName}" added successfully.`);
+        }
+        startApp();
+      });
+    });
+  },
 
-module.exports = departmentController;
+  deleteDepartment: () => {
+    const query = 'SELECT * FROM Department';
+    connection.query(query, (err, departments) => {
+      if (err) {
+        console.error('Error fetching departments:', err);
+      } else {
+        const departmentChoices = departments.map((department) => department.name);
+        inquirer.prompt({
+          type: 'list',
+          name: 'departmentName',
+          message: 'Select the department to delete:',
+          choices: departmentChoices,
+        })
+        .then((answer) => {
+          const deleteQuery = 'DELETE FROM Department WHERE name = ?';
+          connection.query(deleteQuery, [answer.departmentName], (err) => {
+            if (err) {
+              console.error('Error deleting department:', err);
+            } else {
+              console.log(`Department "${answer.departmentName}" deleted successfully.`);
+            }
+            startApp();
+          });
+        });
+      }
+    });
+  }
+};
