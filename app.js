@@ -192,6 +192,12 @@ async function addEmployee() {
       value: role.id,
     }));
 
+    const employees = await connection.query('SELECT * FROM Employee');
+    const managerChoices = employees[0].map((employee) => ({
+      name: `${employee.first_name} ${employee.last_name}`,
+      value: employee.id,
+    }));
+
     const employeeDetails = await inquirer.prompt([
       {
         type: 'input',
@@ -209,14 +215,21 @@ async function addEmployee() {
         message: "Select the employee's role:",
         choices: roleChoices,
       },
+      {
+        type: 'list',
+        name: 'manager_id',
+        message: "Select the employee's manager:",
+        choices: managerChoices,
+      },
     ]);
 
     const insertQuery =
-      'INSERT INTO Employee (first_name, last_name, role_id) VALUES (?, ?, ?)';
+      'INSERT INTO Employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
     await connection.query(insertQuery, [
       employeeDetails.first_name,
       employeeDetails.last_name,
       employeeDetails.role_id,
+      employeeDetails.manager_id,
     ]);
 
     console.log(

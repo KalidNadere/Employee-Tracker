@@ -34,11 +34,22 @@ module.exports = {
         name: 'lastName',
         message: "Enter the employee's last name:",
       },
-      // Add other prompts for role and manager
+      {
+        type: 'list',
+        name: 'role_id',
+        message: "Select the employee's role:",
+        choices: roleChoices,
+      },
+      {
+        type: 'list',
+        name: 'manager_id',
+        message: "Select the employee's manager:",
+        choices: managerChoices,
+      },
     ])
     .then((answers) => {
-      const query = 'INSERT INTO Employee (first_name, last_name) VALUES (?, ?)';
-      connection.query(query, [answers.firstName, answers.lastName], (err) => {
+      const query = 'INSERT INTO Employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)';
+      connection.query(query, [answers.firstName, answers.lastName, answers.roleid, answers.managerid], (err) => {
         if (err) {
           console.error('Error adding employee:', err);
         } else {
