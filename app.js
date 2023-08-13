@@ -89,12 +89,11 @@ async function viewAllDepartments() {
 async function viewAllRoles() {
   try {
     const query = 
-    'SELECT Role.id, Role.title, Role.salary, Department.name AS department FROM Role ' + 
-    'INNER JOIN Department ON Role.department_id = Department.id';
+    'SELECT Role.id, Role.title, Department.name AS department, Role.salary FROM Role LEFT JOIN Department ON Role.department_id = Department.id';
 
     const data = await connection.query(query)
     
-    console.log(data);
+    console.table(data);
 
     startApp()
   } catch (err) {
@@ -296,6 +295,31 @@ async function updateEmployeeRole() {
       console.error('Error deleting department:', err);
     }
   }
+
+  async function deleteRole() {
+  try {
+    const roles = await connection.query('SELECT * FROM Role');
+    const roleChoices = roles[0].map((role) => ({
+      name: role.title,
+      value: role.id,
+    }));
+
+    const selectedRole = await inquirer.prompt({
+      type: 'list',
+      name: 'roleId',
+      message: 'Select the role to delete:',
+      choices: roleChoices,
+    });
+
+    const deleteQuery = 'DELETE FROM Role WHERE id = ?';
+    await connection.query(deleteQuery, [selectedRole.roleId]);
+
+    console.log('Role deleted successfully.');
+    startApp();
+  } catch (err) {
+    console.error('Error deleting role:', err);
+  }
+}
 
   // Function to delete an employee
 async function deleteEmployee() {
