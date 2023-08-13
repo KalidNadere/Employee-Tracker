@@ -5,12 +5,12 @@ module.exports = {
   async viewAllRoles() {
     try {
       const query = 'SELECT * FROM Role';
-      connection.query(query, (err, roles) => {
+      connection.query(query, (err, role) => {
         if (err) {
-          console.error('Error fetching roles:', err);
+          console.error('Error fetching role:', err);
         } else {
           console.log('All Roles:');
-          roles.forEach(role => {
+          role.forEach(role => {
             console.log(`- ${role.title}`);
           });
         }

@@ -75,7 +75,7 @@ function startApp() {
 async function viewAllDepartments() {
   try {
     const query = 'SELECT * FROM Department';
-    const [results, _] = await connection.query(query);
+    const [results] = await connection.query(query);
     
     console.table(results)
 
@@ -94,7 +94,7 @@ async function viewAllRoles() {
 
     const data = await connection.query(query)
     
-    console.table(data);
+    console.log(data);
 
     startApp()
   } catch (err) {
