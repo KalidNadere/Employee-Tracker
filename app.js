@@ -529,7 +529,7 @@ async function deleteEmployee() {
   }
 }
 
-// Functin to view total utilized budget of a department
+// Function to view total utilized budget of a department
 async function calculateDepartmentBudget() {
   try {
     const departmentQuery = 'SELECT * FROM Department';
